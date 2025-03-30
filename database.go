@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -69,3 +70,21 @@ func ListStock(db *sql.DB) ([]Stock, error) {
 	}
 	return stockMaterials, nil
 }
+
+func addStock(db *sql.DB, stock Stock) {
+	err := insertStock(db, &stock)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+// // List all stock in db
+// addStock(db)
+// allStock, err := ListStock(db)
+// if err != nil {
+// 	log.Fatal(err)
+// }
+//
+// for _, stock := range allStock {
+// 	fmt.Println(stock)
+// }
