@@ -32,6 +32,7 @@ func initDB() (*sql.DB, error) {
 			yLength INTEGER NOT NULL,
 			zLength INTEGER NOT NULL,
 			material TEXT NOT NULL,
+			location TEXT,
 			certificate_path TEXT,
 			invoice_path TEXT
 		)
@@ -77,14 +78,3 @@ func addStock(db *sql.DB, stock Stock) {
 		log.Fatal(err)
 	}
 }
-
-// // List all stock in db
-// addStock(db)
-// allStock, err := ListStock(db)
-// if err != nil {
-// 	log.Fatal(err)
-// }
-//
-// for _, stock := range allStock {
-// 	fmt.Println(stock)
-// }

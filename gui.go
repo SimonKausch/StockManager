@@ -1,7 +1,10 @@
 package main
 
 import (
+	"database/sql"
 	"image/color"
+	"log"
+	"strconv"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -16,22 +19,42 @@ func updateTime(clock *widget.Label) {
 	clock.SetText(formatted)
 }
 
-// List all stock in db
-// allStock, err := ListStock(db)
-//
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//	for _, stock := range allStock {
-//		fmt.Println(stock)
-//	}
-func listStockGUI() *string {
-	s := "Result of query"
-	return &s
+func printStock(s Stock) string {
+	var t string
+	t += strconv.Itoa(int(s.ID))
+	t += "    X: "
+	t += strconv.Itoa(s.XLength)
+	t += "    Y: "
+	t += strconv.Itoa(s.YLength)
+	t += "    Z: "
+	t += strconv.Itoa(s.ZLength)
+	t += "    Material: "
+	t += s.Material
+	t += "\n"
+
+	return t
+}
+
+func listStockGUI(db *sql.DB) *string {
+	var out string
+
+	slice, err := ListStock(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, s := range slice {
+		out += printStock(s)
+	}
+	return &out
 }
 
 func gui() {
+	db, err := initDB()
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
 	var width float32 = 500
 
 	a := app.New()
@@ -42,7 +65,7 @@ func gui() {
 	linesep := canvas.NewLine(color.Black)
 	allStock := widget.NewLabel("")
 	listStockButton := widget.NewButton("List all stock", func() {
-		allStock.SetText(*listStockGUI())
+		allStock.SetText(*listStockGUI(db))
 	})
 
 	updateTime(clock)
