@@ -87,6 +87,8 @@ func gui() {
 func addStockWindow(a fyne.App) {
 	wAdd := a.NewWindow("Add stock material")
 	wAdd.Resize(fyne.NewSize(400, 400))
+
+	// All the labels and values for input
 	labelX := widget.NewLabel("X:")
 	valueX := widget.NewEntry()
 	labelY := widget.NewLabel("Y:")
@@ -97,8 +99,25 @@ func addStockWindow(a fyne.App) {
 	valueMaterial := widget.NewEntry()
 	labelLocation := widget.NewLabel("Location:")
 	valueLocation := widget.NewEntry()
+
+	// Create a grid
 	grid := container.New(layout.NewGridLayout(2), labelX, valueX, labelY, valueY, labelZ, valueZ,
 		labelMaterial, valueMaterial, labelLocation, valueLocation)
-	wAdd.SetContent(grid)
+
+	button := widget.NewButton("Add Stock", func() {
+		// Handle button action
+	})
+
+	// Create a vertical box layout to stack the grid and the button
+	content := container.NewVBox(
+		grid,
+		container.NewCenter(
+			button,
+		),
+	)
+
+	//button := container.New(layout.NewCenterLayout(), widget.NewLabel("TEST"))
+	wAdd.SetContent(content)
+	//wAdd.SetContent(button)
 	wAdd.Show()
 }
