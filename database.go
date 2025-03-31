@@ -16,6 +16,7 @@ type Stock struct {
 	Material        string
 	CertificatePath string
 	InvoicePath     string
+	Location        string
 }
 
 func initDB() (*sql.DB, error) {
