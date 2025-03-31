@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fyne.io/fyne/v2/layout"
 	"image/color"
 	"log"
 	"strconv"
@@ -55,11 +56,9 @@ func gui() {
 	}
 	defer db.Close()
 
-	var width float32 = 500
-
 	a := app.New()
 	w := a.NewWindow("StockManger")
-	w.Resize(fyne.Size{Width: width, Height: 200})
+	w.Resize(fyne.Size{Width: 750, Height: 500})
 
 	clock := widget.NewLabel("")
 	linesep := canvas.NewLine(color.Black)
@@ -67,11 +66,14 @@ func gui() {
 	listStockButton := widget.NewButton("List all stock", func() {
 		allStock.SetText(*listStockGUI(db))
 	})
+	addStockButton := widget.NewButton("Add Stock", func() {
+		addStockWindow(a)
+	})
 
 	updateTime(clock)
 	w.SetContent(clock)
 
-	w.SetContent(container.NewVBox(clock, linesep, allStock, listStockButton))
+	w.SetContent(container.NewVBox(clock, linesep, allStock, listStockButton, addStockButton))
 
 	go func() {
 		for range time.Tick(time.Second) {
@@ -80,4 +82,23 @@ func gui() {
 	}()
 
 	w.ShowAndRun()
+}
+
+func addStockWindow(a fyne.App) {
+	wAdd := a.NewWindow("Add stock material")
+	wAdd.Resize(fyne.NewSize(400, 400))
+	labelX := widget.NewLabel("X:")
+	valueX := widget.NewEntry()
+	labelY := widget.NewLabel("Y:")
+	valueY := widget.NewEntry()
+	labelZ := widget.NewLabel("Y:")
+	valueZ := widget.NewEntry()
+	labelMaterial := widget.NewLabel("Material:")
+	valueMaterial := widget.NewEntry()
+	labelLocation := widget.NewLabel("Location:")
+	valueLocation := widget.NewEntry()
+	grid := container.New(layout.NewGridLayout(2), labelX, valueX, labelY, valueY, labelZ, valueZ,
+		labelMaterial, valueMaterial, labelLocation, valueLocation)
+	wAdd.SetContent(grid)
+	wAdd.Show()
 }
