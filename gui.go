@@ -1,13 +1,12 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"fyne.io/fyne/v2/layout"
 	"image/color"
 	"log"
 	"strconv"
 	"time"
+
+	"fyne.io/fyne/v2/layout"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -37,10 +36,10 @@ func printStock(s Stock) string {
 	return t
 }
 
-func listStockGUI(db *sql.DB) *string {
+func listStockGUI() *string {
 	var out string
 
-	slice, err := ListStock(db)
+	slice, err := ListStock()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -51,12 +50,6 @@ func listStockGUI(db *sql.DB) *string {
 }
 
 func gui() {
-	db, err := initDB()
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
 	a := app.New()
 	w := a.NewWindow("StockManger")
 	w.Resize(fyne.Size{Width: 750, Height: 500})
@@ -65,10 +58,10 @@ func gui() {
 	linesep := canvas.NewLine(color.Black)
 	allStock := widget.NewLabel("")
 	listStockButton := widget.NewButton("List all stock", func() {
-		allStock.SetText(*listStockGUI(db))
+		allStock.SetText(*listStockGUI())
 	})
 	addStockButton := widget.NewButton("Add Stock", func() {
-		addStockWindow(a, db)
+		addStockWindow(a)
 	})
 
 	updateTime(clock)
@@ -85,7 +78,7 @@ func gui() {
 	w.ShowAndRun()
 }
 
-func addStockWindow(a fyne.App, db *sql.DB) {
+func addStockWindow(a fyne.App) {
 	wAdd := a.NewWindow("Add stock material")
 	wAdd.Resize(fyne.NewSize(400, 400))
 
@@ -117,8 +110,7 @@ func addStockWindow(a fyne.App, db *sql.DB) {
 			Material: valueMaterial.Text,
 			Location: valueLocation.Text,
 		}
-		fmt.Println(stock)
-		addStock(db, stock)
+		addStock(stock)
 	})
 
 	// Create a vertical box layout to stack the grid and the button
@@ -129,8 +121,8 @@ func addStockWindow(a fyne.App, db *sql.DB) {
 		),
 	)
 
-	//button := container.New(layout.NewCenterLayout(), widget.NewLabel("TEST"))
+	// button := container.New(layout.NewCenterLayout(), widget.NewLabel("TEST"))
 	wAdd.SetContent(content)
-	//wAdd.SetContent(button)
+	// wAdd.SetContent(button)
 	wAdd.Show()
 }

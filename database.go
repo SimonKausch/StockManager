@@ -45,17 +45,17 @@ func initDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func insertStock(db *sql.DB, stock *Stock) error {
+func insertStock(stock *Stock) error {
 	query := `
 		INSERT INTO stock (xLength, yLength, zLength, material, certificate_path, invoice_path)
 		VALUES (?, ?, ?, ?, ?, ?)
 	`
-	_, err := db.Exec(query, stock.XLength, stock.YLength, stock.ZLength, stock.Material, stock.CertificatePath, stock.InvoicePath)
+	_, err := Db.Exec(query, stock.XLength, stock.YLength, stock.ZLength, stock.Material, stock.CertificatePath, stock.InvoicePath)
 	return err
 }
 
-func ListStock(db *sql.DB) ([]Stock, error) {
-	row, err := db.Query("SELECT * FROM stock ORDER BY id")
+func ListStock() ([]Stock, error) {
+	row, err := Db.Query("SELECT * FROM stock ORDER BY id")
 	if err != nil {
 		return nil, err
 	}
@@ -73,8 +73,8 @@ func ListStock(db *sql.DB) ([]Stock, error) {
 	return stockMaterials, nil
 }
 
-func addStock(db *sql.DB, stock Stock) {
-	err := insertStock(db, &stock)
+func addStock(stock Stock) {
+	err := insertStock(&stock)
 	if err != nil {
 		log.Fatal(err)
 	}
