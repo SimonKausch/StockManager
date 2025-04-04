@@ -60,7 +60,7 @@ func gui() {
 	listStockButton := widget.NewButton("List all stock", func() {
 		allStock.SetText(*listStockGUI())
 	})
-	addStockButton := widget.NewButton("Add Stock", func() {
+	addStockButton := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
 	})
 
@@ -98,7 +98,7 @@ func addStockWindow(a fyne.App) {
 	grid := container.New(layout.NewGridLayout(2), labelX, valueX, labelY, valueY, labelZ, valueZ,
 		labelMaterial, valueMaterial, labelLocation, valueLocation)
 
-	button := widget.NewButton("Add Stock", func() {
+	buttonAdd := widget.NewButton("Add Stock", func() {
 		// Handle button action
 		x, _ := strconv.Atoi(valueX.Text)
 		y, _ := strconv.Atoi(valueY.Text)
@@ -113,16 +113,13 @@ func addStockWindow(a fyne.App) {
 		addStock(stock)
 	})
 
+	buttonSearch := widget.NewButton("Search", func() {
+	})
+
 	// Create a vertical box layout to stack the grid and the button
 	content := container.NewVBox(
-		grid,
-		container.NewCenter(
-			button,
-		),
-	)
+		grid, buttonSearch, buttonAdd)
 
-	// button := container.New(layout.NewCenterLayout(), widget.NewLabel("TEST"))
 	wAdd.SetContent(content)
-	// wAdd.SetContent(button)
 	wAdd.Show()
 }
