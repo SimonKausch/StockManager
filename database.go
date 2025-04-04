@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -45,7 +44,7 @@ func initDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func insertStock(stock *Stock) error {
+func addStock(stock *Stock) error {
 	query := `
 		INSERT INTO stock (xLength, yLength, zLength, material, certificate_path, invoice_path)
 		VALUES (?, ?, ?, ?, ?, ?)
@@ -73,9 +72,9 @@ func ListStock() ([]Stock, error) {
 	return stockMaterials, nil
 }
 
-func addStock(stock Stock) {
-	err := insertStock(&stock)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+// func addStock(stock Stock) {
+// 	err := insertStock(&stock)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// }
