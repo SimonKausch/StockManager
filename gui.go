@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"strconv"
@@ -34,6 +35,17 @@ func printStock(s Stock) string {
 	t += "\n"
 
 	return t
+}
+
+// parseIntInput attempts to convert text to an integer and returns a
+// more informative error if it fails.
+func parseIntInput(text string) (int, error) {
+	val, err := strconv.Atoi(text)
+	if err != nil {
+		// Return a new error that includes the name of the input field
+		return 0, fmt.Errorf("invalid integer for %s: %w", text, err)
+	}
+	return val, nil
 }
 
 func listStockGUI() *string {
@@ -114,9 +126,41 @@ func addStockWindow(a fyne.App) {
 
 	buttonSearch := widget.NewButton("Search", func() {
 		// TODO: Check if x,y,z is an int
-		x, _ := strconv.Atoi(valueX.Text)
-		y, _ := strconv.Atoi(valueY.Text)
-		z, _ := strconv.Atoi(valueZ.Text)
+
+		// x, err := strconv.Atoi(valueX.Text)
+		// if err != nil {
+		// 	log.Printf("Input is not integer: %v", err)
+		// 	return
+		// }
+		// y, err := strconv.Atoi(valueY.Text)
+		// if err != nil {
+		// 	log.Printf("Input is not integer: %v", err)
+		// 	return
+		// }
+		// z, err := strconv.Atoi(valueZ.Text)
+		// if err != nil {
+		// 	log.Printf("Input is not integer: %v", err)
+		// 	return
+		// }
+		var x, y, z int
+		var err error = nil
+
+		x, err = parseIntInput(valueX.Text)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		y, err = parseIntInput(valueY.Text)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		z, err = parseIntInput(valueZ.Text)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		stock := Stock{
 			XLength:  x,
 			YLength:  y,
