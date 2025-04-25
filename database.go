@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -53,6 +54,45 @@ func addStock(stock *Stock) error {
 	return err
 }
 
+func searchStock(stock *Stock) ([]Stock, error) {
+	// TODO: Check for the correct material
+	// TODO: Add test for this function
+
+	var result []Stock
+
+	query := `
+		SELECT ID, xLength, yLength, zLength, material
+		FROM stock
+		WHERE xLength >= ? AND yLength >= ? AND zLength >= ?`
+
+	rows, err := Db.Query(query, stock.XLength, stock.YLength, stock.ZLength)
+	if err != nil {
+		log.Printf("Error querying stock by length: %v", err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		var s Stock
+		// Scan the columns into the fields of the Stock struct
+		// Make sure the order and types match your SELECT statement
+		err := rows.Scan(&s.ID, &s.XLength, &s.YLength, &s.ZLength, &s.Material)
+		if err != nil {
+			log.Printf("Error scanning stock row: %v", err)
+			return nil, err // Or handle the error as appropriate
+		}
+		result = append(result, s)
+		log.Printf("Found suitable material: %v", s)
+	}
+
+	// Check for errors encountered during iteration
+	if err = rows.Err(); err != nil {
+		log.Printf("Error during rows iteration: %v", err)
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func ListStock() ([]Stock, error) {
 	row, err := Db.Query("SELECT * FROM stock ORDER BY id")
 	if err != nil {
@@ -71,10 +111,3 @@ func ListStock() ([]Stock, error) {
 	}
 	return stockMaterials, nil
 }
-
-// func addStock(stock Stock) {
-// 	err := insertStock(&stock)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// }

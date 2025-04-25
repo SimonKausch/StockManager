@@ -113,6 +113,7 @@ func addStockWindow(a fyne.App) {
 	})
 
 	buttonSearch := widget.NewButton("Search", func() {
+		// TODO: Check if x,y,z is an int
 		x, _ := strconv.Atoi(valueX.Text)
 		y, _ := strconv.Atoi(valueY.Text)
 		z, _ := strconv.Atoi(valueZ.Text)
@@ -123,8 +124,7 @@ func addStockWindow(a fyne.App) {
 			Material: valueMaterial.Text,
 			Location: valueLocation.Text,
 		}
-		// TODO: Search stock function
-		addStock(&stock)
+		searchStock(&stock)
 	})
 
 	// Create a vertical box layout to stack the grid and the button
