@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"net/http"
 	"os"
 )
@@ -14,6 +15,26 @@ const (
 	serverAdress = "http://127.0.0.1"
 	endpoint     = "/box/model.stp"
 )
+
+type boundingBox struct {
+	boxX float64
+	boxY float64
+	boxZ float64
+}
+
+func bboxLengths(n []float64) boundingBox {
+	var b boundingBox
+
+	b.boxX = n[3] - n[0]
+	b.boxY = n[4] - n[1]
+	b.boxZ = n[5] - n[2]
+
+	b.boxX = math.Ceil(b.boxX*100) / 100
+	b.boxY = math.Ceil(b.boxY*100) / 100
+	b.boxZ = math.Ceil(b.boxZ*100) / 100
+
+	return b
+}
 
 func main() {
 	res, err := http.Get(serverAdress + ":" + serverPort + endpoint)
@@ -40,5 +61,6 @@ func main() {
 
 	res.Body.Close()
 
-	fmt.Println(numbers)
+	log.Println(numbers)
+	log.Println(bboxLengths(numbers))
 }
