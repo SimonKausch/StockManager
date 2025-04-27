@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"math"
@@ -13,38 +12,38 @@ import (
 const (
 	serverPort   = "8000"
 	serverAdress = "http://127.0.0.1"
-	endpoint     = "/box/model.stp"
 )
 
-type boundingBox struct {
-	boxX float64
-	boxY float64
-	boxZ float64
+type BoundingBox struct {
+	BoxX float64
+	BoxY float64
+	BoxZ float64
 }
 
-func bboxLengths(n []float64) boundingBox {
-	var b boundingBox
+func bboxLengths(n []float64) BoundingBox {
+	var b BoundingBox
 
-	b.boxX = n[3] - n[0]
-	b.boxY = n[4] - n[1]
-	b.boxZ = n[5] - n[2]
+	b.BoxX = n[3] - n[0]
+	b.BoxY = n[4] - n[1]
+	b.BoxZ = n[5] - n[2]
 
-	b.boxX = math.Ceil(b.boxX*100) / 100
-	b.boxY = math.Ceil(b.boxY*100) / 100
-	b.boxZ = math.Ceil(b.boxZ*100) / 100
+	b.BoxX = math.Ceil(b.BoxX*100) / 100
+	b.BoxY = math.Ceil(b.BoxY*100) / 100
+	b.BoxZ = math.Ceil(b.BoxZ*100) / 100
 
 	return b
 }
 
-func main() {
+// Requests the bounding box in x, y and z axis
+// Returns a slice of floats
+func requestBBox(filename string) []float64 {
+	endpoint := "/box/" + filename
+
 	res, err := http.Get(serverAdress + ":" + serverPort + endpoint)
 	if err != nil {
 		log.Println(err)
 		os.Exit(0)
 	}
-
-	fmt.Printf("client: got response!\n")
-	fmt.Printf("client: status code: %d\n", res.StatusCode)
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
@@ -58,9 +57,14 @@ func main() {
 
 	var numbers []float64
 	err = json.Unmarshal(body, &numbers)
+	if err != nil {
+		log.Println(err)
+	}
 
 	res.Body.Close()
 
 	log.Println(numbers)
 	log.Println(bboxLengths(numbers))
+
+	return numbers
 }

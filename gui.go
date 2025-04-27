@@ -66,7 +66,6 @@ func gui() {
 	w := a.NewWindow("StockManger")
 	w.Resize(fyne.Size{Width: 750, Height: 500})
 
-	clock := widget.NewLabel("")
 	linesep := canvas.NewLine(color.Black)
 	allStock := widget.NewLabel("")
 	listStockButton := widget.NewButton("List all stock", func() {
@@ -76,16 +75,7 @@ func gui() {
 		addStockWindow(a)
 	})
 
-	updateTime(clock)
-	w.SetContent(clock)
-
-	w.SetContent(container.NewVBox(clock, linesep, allStock, listStockButton, addStockButton))
-
-	go func() {
-		for range time.Tick(time.Second) {
-			updateTime(clock)
-		}
-	}()
+	w.SetContent(container.NewVBox(linesep, allStock, listStockButton, addStockButton))
 
 	w.ShowAndRun()
 }
@@ -126,22 +116,6 @@ func addStockWindow(a fyne.App) {
 
 	buttonSearch := widget.NewButton("Search", func() {
 		// TODO: Check if x,y,z is an int
-
-		// x, err := strconv.Atoi(valueX.Text)
-		// if err != nil {
-		// 	log.Printf("Input is not integer: %v", err)
-		// 	return
-		// }
-		// y, err := strconv.Atoi(valueY.Text)
-		// if err != nil {
-		// 	log.Printf("Input is not integer: %v", err)
-		// 	return
-		// }
-		// z, err := strconv.Atoi(valueZ.Text)
-		// if err != nil {
-		// 	log.Printf("Input is not integer: %v", err)
-		// 	return
-		// }
 		var x, y, z int
 		var err error = nil
 
