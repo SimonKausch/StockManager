@@ -20,6 +20,8 @@ type BoundingBox struct {
 	BoxZ float64
 }
 
+// Calculates the lengts of the bounding box in x,y,z
+// Returns type BoundingBox
 func bboxLengths(n []float64) BoundingBox {
 	var b BoundingBox
 
@@ -35,8 +37,8 @@ func bboxLengths(n []float64) BoundingBox {
 }
 
 // Requests the bounding box in x, y and z axis
-// Returns a slice of floats
-func requestBBox(filename string) []float64 {
+// Returns BoundingBox type
+func requestBBox(filename string) BoundingBox {
 	endpoint := "/box/" + filename
 
 	res, err := http.Get(serverAdress + ":" + serverPort + endpoint)
@@ -64,7 +66,8 @@ func requestBBox(filename string) []float64 {
 	res.Body.Close()
 
 	log.Println(numbers)
-	log.Println(bboxLengths(numbers))
 
-	return numbers
+	bBox := bboxLengths(numbers)
+
+	return bBox
 }
