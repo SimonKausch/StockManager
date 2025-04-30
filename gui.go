@@ -58,7 +58,7 @@ func printStock(s Stock) string {
 // more informative error if it fails.
 func parseIntInput(text string) (int, error) {
 	val, err := strconv.Atoi(text)
-	if err != nil {
+	if err != nil || val <= 0 {
 		// Return a new error that includes the name of the input field
 		return 0, fmt.Errorf("invalid integer for %s: %w", text, err)
 	}
@@ -135,6 +135,7 @@ func addStepWindow(a fyne.App) {
 }
 
 func addStockWindow(a fyne.App) {
+	// TODO: Show list of materials from json file
 	wAdd := a.NewWindow("Add stock material")
 	wAdd.Resize(fyne.NewSize(400, 400))
 
