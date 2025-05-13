@@ -50,23 +50,28 @@ func addStepWindow(a fyne.App) {
 		wAdd.Show()
 	} else {
 		// var r string
-		output := widget.NewRadioGroup(listFiles, func(r string) {
+		var file string
+		output := widget.NewSelect(listFiles, func(r string) {
+			file = r
 		})
 		analyzeFile := widget.NewButton("Analyze chosen file", func() {
-			// TODO: replace filename with result from NewRadioGroup
-			bbox := requestBBox("model.stp")
+			if len(file) > 0 {
+				bbox := requestBBox(file)
 
-			// From float to a string with a precision of 1 decimal place
-			x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
-			y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
-			z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
+				// From float to a string with a precision of 1 decimal place
+				x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
+				y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
+				z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
 
-			result := x + y + z
-			outputBox := widget.NewLabel(result)
+				result := x + y + z
+				outputBox := widget.NewLabel(result)
 
-			// Update window
-			wAdd.SetContent(outputBox)
-			wAdd.Show()
+				// Update window
+				wAdd.SetContent(outputBox)
+				wAdd.Show()
+			} else {
+				log.Println("Filename empty")
+			}
 		})
 		wAdd.SetContent(container.NewVBox(output, analyzeFile))
 		wAdd.Show()
