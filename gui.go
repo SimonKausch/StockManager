@@ -33,20 +33,57 @@ func gui() {
 	addStockButton := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
 	})
-	bboxStepButton := widget.NewButton("Analyze step file", func() {
-		addStepWindow(a)
-	})
+	// bboxStepButton := widget.NewButton("Analyze step file", func() {
+	// 	addStepWindow(a)
+	// })
 
 	leftSide := container.NewVBox(listStockButton, addStockButton, linesep, allStock)
 
-	// TODO: Show step file related things here instead of a new window
-	rightSide := container.NewVBox(bboxStepButton)
+	rightSide := analyzeStep()
 
 	scroll := container.NewAdaptiveGrid(2, leftSide, rightSide)
 
 	w.SetContent(scroll)
 
 	w.ShowAndRun()
+}
+
+func analyzeStep() *fyne.Container {
+	var cont *fyne.Container
+
+	listFiles, err := getFilesinDir()
+	if err != nil {
+		output := widget.NewLabel(fmt.Sprint(err))
+		cont = container.NewVBox(output)
+	} else {
+		// var r string
+		var file string
+		outputBox := widget.NewLabel("Box output")
+
+		output := widget.NewSelect(listFiles, func(r string) {
+			file = r
+		})
+		analyzeFile := widget.NewButton("Analyze chosen file", func() {
+			if len(file) > 0 {
+				bbox := requestBBox(file)
+
+				// From float to a string with a precision of 1 decimal place
+				x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
+				y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
+				z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
+
+				result := x + y + z
+				outputBox.SetText(result)
+				// cont = container.NewVBox(outputBox)
+
+			} else {
+				// TODO: Show error message to user
+				log.Println("Filename empty")
+			}
+		})
+		cont = container.NewVBox(output, analyzeFile, outputBox)
+	}
+	return cont
 }
 
 func addStepWindow(a fyne.App) {
