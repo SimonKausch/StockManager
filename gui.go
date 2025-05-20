@@ -20,10 +20,13 @@ const stepDir = "../stepReader/files/"
 func gui() {
 	a := app.New()
 	w := a.NewWindow("StockManger")
-	w.Resize(fyne.Size{Width: 750, Height: 500})
+	w.Resize(fyne.Size{Width: 1000, Height: 750})
 
 	linesep := canvas.NewLine(color.Black)
+
+	// TODO: Improve output, maybe as a table
 	allStock := widget.NewLabel("")
+
 	listStockButton := widget.NewButton("List all stock", func() {
 		allStock.SetText(*listStockGUI())
 	})
@@ -34,7 +37,14 @@ func gui() {
 		addStepWindow(a)
 	})
 
-	w.SetContent(container.NewVBox(linesep, allStock, listStockButton, addStockButton, bboxStepButton))
+	leftSide := container.NewVBox(listStockButton, addStockButton, linesep, allStock)
+
+	// TODO: Show step file related things here instead of a new window
+	rightSide := container.NewVBox(bboxStepButton)
+
+	scroll := container.NewAdaptiveGrid(2, leftSide, rightSide)
+
+	w.SetContent(scroll)
 
 	w.ShowAndRun()
 }
@@ -70,6 +80,7 @@ func addStepWindow(a fyne.App) {
 				wAdd.SetContent(outputBox)
 				wAdd.Show()
 			} else {
+				// TODO: Show error message to user
 				log.Println("Filename empty")
 			}
 		})
