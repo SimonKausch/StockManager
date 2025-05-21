@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/widget"
 )
 
 // parseIntInput attempts to convert text to an integer and returns a
@@ -48,7 +51,8 @@ func printStock(s Stock) string {
 	return t
 }
 
-func listStockGUI() *string {
+// Return stock as one string
+func listStockString() *string {
 	var out string
 
 	slice, err := ListStock()
@@ -59,4 +63,24 @@ func listStockGUI() *string {
 		out += printStock(s)
 	}
 	return &out
+}
+
+// Return stock as buttons
+func listStockButtons() []fyne.CanvasObject {
+	// TODO: Use this in gui.go
+	var items []fyne.CanvasObject
+
+	slice, err := ListStock()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for i, s := range slice {
+		label := strconv.Itoa(int(s.ID)) + " " + s.Material
+		items = append(items, widget.NewButton(label, func() {
+			fmt.Println("Tapped", i)
+		}))
+	}
+
+	return items
 }

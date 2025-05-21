@@ -22,26 +22,29 @@ func gui() {
 	w := a.NewWindow("StockManger")
 	w.Resize(fyne.Size{Width: 1000, Height: 750})
 
+	var scroll *fyne.Container
+
 	linesep := canvas.NewLine(color.Black)
 
+	rightSide := analyzeStep()
+
 	// TODO: Improve output, maybe as a table
-	allStock := widget.NewLabel("")
+	// allStock := widget.NewLabel("")
+	allStockButtons := container.NewVBox()
 
 	listStockButton := widget.NewButton("List all stock", func() {
-		allStock.SetText(*listStockGUI())
+		allStockButtons = container.NewVBox(container.NewVBox(listStockButtons()...))
+		scrollUpdate := container.NewAdaptiveGrid(2, allStockButtons, rightSide)
+		w.SetContent(scrollUpdate)
+		w.Show()
 	})
 	addStockButton := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
 	})
-	// bboxStepButton := widget.NewButton("Analyze step file", func() {
-	// 	addStepWindow(a)
-	// })
 
-	leftSide := container.NewVBox(listStockButton, addStockButton, linesep, allStock)
+	leftSide := container.NewVBox(listStockButton, addStockButton, linesep, allStockButtons)
 
-	rightSide := analyzeStep()
-
-	scroll := container.NewAdaptiveGrid(2, leftSide, rightSide)
+	scroll = container.NewAdaptiveGrid(2, leftSide, rightSide)
 
 	w.SetContent(scroll)
 
@@ -58,7 +61,7 @@ func analyzeStep() *fyne.Container {
 	} else {
 		// var r string
 		var file string
-		outputBox := widget.NewLabel("Box output")
+		outputBox := widget.NewLabel("")
 
 		output := widget.NewSelect(listFiles, func(r string) {
 			file = r
@@ -77,53 +80,12 @@ func analyzeStep() *fyne.Container {
 				// cont = container.NewVBox(outputBox)
 
 			} else {
-				// TODO: Show error message to user
-				log.Println("Filename empty")
+				outputBox.SetText("Filename empty")
 			}
 		})
 		cont = container.NewVBox(output, analyzeFile, outputBox)
 	}
 	return cont
-}
-
-func addStepWindow(a fyne.App) {
-	wAdd := a.NewWindow("Get bounding box")
-	wAdd.Resize(fyne.NewSize(400, 400))
-
-	listFiles, err := getFilesinDir()
-	if err != nil {
-		output := widget.NewLabel(fmt.Sprint(err))
-		wAdd.SetContent(container.NewVBox(output))
-		wAdd.Show()
-	} else {
-		// var r string
-		var file string
-		output := widget.NewSelect(listFiles, func(r string) {
-			file = r
-		})
-		analyzeFile := widget.NewButton("Analyze chosen file", func() {
-			if len(file) > 0 {
-				bbox := requestBBox(file)
-
-				// From float to a string with a precision of 1 decimal place
-				x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
-				y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
-				z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
-
-				result := x + y + z
-				outputBox := widget.NewLabel(result)
-
-				// Update window
-				wAdd.SetContent(outputBox)
-				wAdd.Show()
-			} else {
-				// TODO: Show error message to user
-				log.Println("Filename empty")
-			}
-		})
-		wAdd.SetContent(container.NewVBox(output, analyzeFile))
-		wAdd.Show()
-	}
 }
 
 func addStockWindow(a fyne.App) {
