@@ -22,31 +22,26 @@ func gui() {
 	w := a.NewWindow("StockManger")
 	w.Resize(fyne.Size{Width: 1000, Height: 750})
 
-	var scroll *fyne.Container
+	var mainContainer *fyne.Container
 
 	linesep := canvas.NewLine(color.Black)
 
+	entryList := widget.NewLabel("")
+
 	rightSide := analyzeStep()
 
-	// TODO: Improve output, maybe as a table
-	// allStock := widget.NewLabel("")
-	allStockButtons := container.NewVBox()
-
-	listStockButton := widget.NewButton("List all stock", func() {
-		allStockButtons = container.NewVBox(container.NewVBox(listStockButtons()...))
-		scrollUpdate := container.NewAdaptiveGrid(2, allStockButtons, rightSide)
-		w.SetContent(scrollUpdate)
-		w.Show()
+	buttonListAll := widget.NewButton("List all stock", func() {
+		entryList.SetText(*listStockString())
 	})
-	addStockButton := widget.NewButton("Add or search Stock", func() {
+	buttonAdd := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
 	})
 
-	leftSide := container.NewVBox(listStockButton, addStockButton, linesep, allStockButtons)
+	leftSide := container.NewVBox(buttonListAll, buttonAdd, linesep, entryList)
 
-	scroll = container.NewAdaptiveGrid(2, leftSide, rightSide)
+	mainContainer = container.NewAdaptiveGrid(2, leftSide, rightSide)
 
-	w.SetContent(scroll)
+	w.SetContent(mainContainer)
 
 	w.ShowAndRun()
 }
@@ -61,12 +56,12 @@ func analyzeStep() *fyne.Container {
 	} else {
 		// var r string
 		var file string
-		outputBox := widget.NewLabel("")
+		entryResult := widget.NewLabel("")
 
 		output := widget.NewSelect(listFiles, func(r string) {
 			file = r
 		})
-		analyzeFile := widget.NewButton("Analyze chosen file", func() {
+		buttonAnalyze := widget.NewButton("Analyze chosen file", func() {
 			if len(file) > 0 {
 				bbox := requestBBox(file)
 
@@ -76,14 +71,14 @@ func analyzeStep() *fyne.Container {
 				z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
 
 				result := x + y + z
-				outputBox.SetText(result)
+				entryResult.SetText(result)
 				// cont = container.NewVBox(outputBox)
 
 			} else {
-				outputBox.SetText("Filename empty")
+				entryResult.SetText("Filename empty")
 			}
 		})
-		cont = container.NewVBox(output, analyzeFile, outputBox)
+		cont = container.NewVBox(output, buttonAnalyze, entryResult)
 	}
 	return cont
 }
