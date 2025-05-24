@@ -20,11 +20,9 @@ const stepDir = "../stepReader/files/"
 func gui() {
 	a := app.New()
 	w := a.NewWindow("StockManger")
-	w.Resize(fyne.Size{Width: 1000, Height: 750})
+	w.Resize(fyne.Size{Width: 750, Height: 750})
 
-	var mainContainer *fyne.Container
-
-	linesep := canvas.NewLine(color.Black)
+	Linesep := canvas.NewLine(color.Black)
 
 	entryList := widget.NewLabel("")
 
@@ -37,12 +35,12 @@ func gui() {
 		addStockWindow(a)
 	})
 
-	leftSide := container.NewVBox(buttonListAll, buttonAdd, linesep, entryList)
+	leftSide := container.NewVBox(buttonListAll, buttonAdd, Linesep, entryList)
 
-	mainContainer = container.NewAdaptiveGrid(2, leftSide, rightSide)
+	mainContainer := container.NewAdaptiveGrid(2, leftSide, rightSide)
 
 	w.SetContent(mainContainer)
-
+	w.CenterOnScreen()
 	w.ShowAndRun()
 }
 
@@ -50,6 +48,7 @@ func analyzeStep() *fyne.Container {
 	var cont *fyne.Container
 
 	listFiles, err := getFilesinDir()
+
 	if err != nil {
 		output := widget.NewLabel(fmt.Sprint(err))
 		cont = container.NewVBox(output)
@@ -61,7 +60,9 @@ func analyzeStep() *fyne.Container {
 		output := widget.NewSelect(listFiles, func(r string) {
 			file = r
 		})
-		buttonAnalyze := widget.NewButton("Analyze chosen file", func() {
+		output.PlaceHolder = "Select step file"
+
+		buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
 			if len(file) > 0 {
 				bbox := requestBBox(file)
 
@@ -72,13 +73,11 @@ func analyzeStep() *fyne.Container {
 
 				result := x + y + z
 				entryResult.SetText(result)
-				// cont = container.NewVBox(outputBox)
-
 			} else {
 				entryResult.SetText("Filename empty")
 			}
 		})
-		cont = container.NewVBox(output, buttonAnalyze, entryResult)
+		cont = container.NewVBox(output, buttonAnalyze, canvas.NewLine(color.Black), entryResult)
 	}
 	return cont
 }
