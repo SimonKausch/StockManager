@@ -35,7 +35,7 @@ func getFilesinDir() ([]string, error) {
 	return files, nil
 }
 
-func printStock(s Stock) string {
+func PrintStock(s Stock) string {
 	var t string
 	t += strconv.Itoa(int(s.ID))
 	t += "    X: "
@@ -60,7 +60,7 @@ func listStockString() *string {
 		log.Fatal(err)
 	}
 	for _, s := range slice {
-		out += printStock(s)
+		out += PrintStock(s)
 	}
 	return &out
 }

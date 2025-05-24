@@ -6,6 +6,7 @@ import (
 	"log"
 	"strconv"
 
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 
 	"fyne.io/fyne/v2"
@@ -26,7 +27,7 @@ func gui() {
 
 	entryList := widget.NewLabel("")
 
-	rightSide := analyzeStep()
+	rightSide := analyzeStep(w)
 
 	buttonListAll := widget.NewButton("List all stock", func() {
 		entryList.SetText(*listStockString())
@@ -44,16 +45,15 @@ func gui() {
 	w.ShowAndRun()
 }
 
-func analyzeStep() *fyne.Container {
+func analyzeStep(w fyne.Window) *fyne.Container {
 	var cont *fyne.Container
+	var bbox BoundingBox
 
 	listFiles, err := getFilesinDir()
 
 	if err != nil {
-		output := widget.NewLabel(fmt.Sprint(err))
-		cont = container.NewVBox(output)
+		dialog.ShowError(err, w)
 	} else {
-		// var r string
 		var file string
 		entryResult := widget.NewLabel("")
 
@@ -64,7 +64,7 @@ func analyzeStep() *fyne.Container {
 
 		buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
 			if len(file) > 0 {
-				bbox := requestBBox(file)
+				bbox = requestBBox(file)
 
 				// From float to a string with a precision of 1 decimal place
 				x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
@@ -74,10 +74,31 @@ func analyzeStep() *fyne.Container {
 				result := x + y + z
 				entryResult.SetText(result)
 			} else {
-				entryResult.SetText("Filename empty")
+				dialog.ShowInformation("Info", "Filename empty", w)
 			}
 		})
-		cont = container.NewVBox(output, buttonAnalyze, canvas.NewLine(color.Black), entryResult)
+
+		buttonFindStock := widget.NewButton("Find fitting stock", func() {
+			if entryResult.Text == "" {
+				dialog.ShowInformation("Error", "No step file analyzed", w)
+			} else {
+				allStock, err := ListStock()
+				if err != nil {
+					log.Println(err)
+				}
+				fittingStock := findFittingStock(bbox, allStock)
+				log.Println(fittingStock)
+
+				var output string
+				for _, s := range fittingStock {
+					output += PrintStock(s)
+				}
+				// TODO: Instead of dialog, create new window
+				dialog.ShowInformation("Fitting stock", output, w)
+			}
+		})
+
+		cont = container.NewVBox(output, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
 	}
 	return cont
 }
