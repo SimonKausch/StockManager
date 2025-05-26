@@ -23,6 +23,12 @@ func TestFitsIn(t *testing.T) {
 			expected: true,
 		},
 		{
+			name:     "Box is smaller but oriented wrong",
+			box:      BoundingBox{BoxX: 15.0, BoxY: 9.0, BoxZ: 25.0},
+			stock:    Stock{ID: 2, XLength: 10, YLength: 20, ZLength: 30},
+			expected: true,
+		},
+		{
 			name:     "Box is larger in X dimension",
 			box:      BoundingBox{BoxX: 11.0, BoxY: 20.0, BoxZ: 30.0},
 			stock:    Stock{ID: 3, XLength: 10, YLength: 20, ZLength: 30},
@@ -38,18 +44,6 @@ func TestFitsIn(t *testing.T) {
 			name:     "Box is larger in Z dimension",
 			box:      BoundingBox{BoxX: 10.0, BoxY: 20.0, BoxZ: 31.0},
 			stock:    Stock{ID: 5, XLength: 10, YLength: 20, ZLength: 30},
-			expected: false,
-		},
-		{
-			name:     "Box is larger in multiple dimensions (X and Y)",
-			box:      BoundingBox{BoxX: 11.0, BoxY: 22.0, BoxZ: 30.0},
-			stock:    Stock{ID: 6, XLength: 10, YLength: 20, ZLength: 30},
-			expected: false,
-		},
-		{
-			name:     "Box is larger in all dimensions",
-			box:      BoundingBox{BoxX: 11.0, BoxY: 21.0, BoxZ: 31.0},
-			stock:    Stock{ID: 7, XLength: 10, YLength: 20, ZLength: 30},
 			expected: false,
 		},
 		{

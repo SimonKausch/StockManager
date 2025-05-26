@@ -1,14 +1,33 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
-
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/widget"
+	"text/tabwriter"
 )
+
+func createTable(stock []Stock) string {
+	var buf bytes.Buffer
+
+	w := tabwriter.NewWriter(&buf, 10, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "ID\tX\tY\tZ\tMaterial")
+	// TODO: for loop over slice of Stock
+	for _, s := range stock {
+		out := strconv.Itoa(int(s.ID)) + "\t"
+		out += strconv.Itoa(int(s.XLength)) + "\t"
+		out += strconv.Itoa(int(s.YLength)) + "\t"
+		out += strconv.Itoa(int(s.ZLength)) + "\t"
+		out += s.Material
+		fmt.Fprintln(w, out)
+	}
+	// fmt.Fprintln(w, "10\t100\t50\t30\tStahl")
+	w.Flush()
+
+	return buf.String()
+}
 
 // parseIntInput attempts to convert text to an integer and returns a
 // more informative error if it fails.
@@ -37,15 +56,18 @@ func getFilesinDir() ([]string, error) {
 
 func PrintStock(s Stock) string {
 	var t string
+
 	t += strconv.Itoa(int(s.ID))
-	t += "    X: "
+	t += "\tX: "
 	t += strconv.Itoa(s.XLength)
-	t += "    Y: "
+	t += "\tY: "
 	t += strconv.Itoa(s.YLength)
 	t += "    Z: "
 	t += strconv.Itoa(s.ZLength)
 	t += "    Material: "
 	t += s.Material
+	t += "    Location: "
+	t += s.Location
 	t += "\n"
 
 	return t
@@ -63,24 +85,4 @@ func listStockString() *string {
 		out += PrintStock(s)
 	}
 	return &out
-}
-
-// Return stock as buttons
-func listStockButtons() []fyne.CanvasObject {
-	// TODO: Use this in gui.go
-	var items []fyne.CanvasObject
-
-	slice, err := ListStock()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for i, s := range slice {
-		label := strconv.Itoa(int(s.ID)) + " " + s.Material
-		items = append(items, widget.NewButton(label, func() {
-			fmt.Println("Tapped", i)
-		}))
-	}
-
-	return items
 }

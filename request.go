@@ -44,6 +44,7 @@ func requestBBox(filename string) BoundingBox {
 	res, err := http.Get(serverAdress + ":" + serverPort + endpoint)
 	if err != nil {
 		log.Println(err)
+		// TODO: Error message instead of os.Exit
 		os.Exit(0)
 	}
 

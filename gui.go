@@ -27,10 +27,14 @@ func gui() {
 
 	entryList := widget.NewLabel("")
 
+	// temporaryStock, _ := ListStock()
+	// entryTable := widget.NewLabel(createTable(temporaryStock))
+
 	rightSide := analyzeStep(w)
 
 	buttonListAll := widget.NewButton("List all stock", func() {
-		entryList.SetText(*listStockString())
+		temporaryStock, _ := ListStock()
+		entryList.SetText(createTable(temporaryStock))
 	})
 	buttonAdd := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
@@ -87,14 +91,15 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 					log.Println(err)
 				}
 				fittingStock := findFittingStock(bbox, allStock)
-				log.Println(fittingStock)
-
-				var output string
-				for _, s := range fittingStock {
-					output += PrintStock(s)
-				}
+				// log.Println(fittingStock)
+				//
+				// var output string
+				// // TODO: Insert header as first line in ouput
+				// for _, s := range fittingStock {
+				// 	output += PrintStock(s)
+				// }
 				// TODO: Instead of dialog, create new window
-				dialog.ShowInformation("Fitting stock", output, w)
+				dialog.ShowInformation("Fitting stock", createTable(fittingStock), w)
 			}
 		})
 
