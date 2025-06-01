@@ -136,24 +136,26 @@ func addStockWindow(a fyne.App) {
 		addStock(&stock)
 	})
 
-	// TODO: Show output from search in this window
+	// Show output from search
+	resultsList := widget.NewLabel("")
+
 	buttonSearch := widget.NewButton("Search", func() {
 		var x, y, z int
 		var err error = nil
 
 		x, err = parseIntInput(valueX.Text)
 		if err != nil {
-			log.Println(err)
+			resultsList.SetText(fmt.Sprint(err))
 			return
 		}
 		y, err = parseIntInput(valueY.Text)
 		if err != nil {
-			log.Println(err)
+			resultsList.SetText(fmt.Sprint(err))
 			return
 		}
 		z, err = parseIntInput(valueZ.Text)
 		if err != nil {
-			log.Println(err)
+			resultsList.SetText(fmt.Sprint(err))
 			return
 		}
 
@@ -164,12 +166,18 @@ func addStockWindow(a fyne.App) {
 			Material: valueMaterial.Text,
 			Location: valueLocation.Text,
 		}
-		searchStock(&stock)
+
+		// Display result of search or error
+		result, err := searchStock(&stock)
+		if err != nil {
+			resultsList.SetText(fmt.Sprint(err))
+		}
+		resultsList.SetText("Found suitable stock:\n" + createTable(result))
 	})
 
 	// Create a vertical box layout to stack the grid and the button
 	content := container.NewVBox(
-		grid, buttonSearch, buttonAdd)
+		grid, buttonSearch, buttonAdd, resultsList)
 
 	wAdd.SetContent(content)
 	wAdd.Show()

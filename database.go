@@ -55,7 +55,6 @@ func addStock(stock *Stock) error {
 }
 
 func searchStock(stock *Stock) ([]Stock, error) {
-	// TODO: Check for the correct material
 	// TODO: Add test for this function
 
 	var result []Stock
@@ -89,7 +88,7 @@ func searchStock(stock *Stock) ([]Stock, error) {
 			return nil, err // Or handle the error as appropriate
 		}
 		result = append(result, s)
-		log.Printf("Found suitable material: %v", s)
+		// log.Printf("Found suitable material: %v", s)
 	}
 
 	// Check for errors encountered during iteration
