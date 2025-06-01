@@ -113,6 +113,7 @@ func addStockWindow(a fyne.App) {
 	labelZ := widget.NewLabel("Z:")
 	valueZ := widget.NewEntry()
 	labelMaterial := widget.NewLabel("Material:")
+	// TODO: Dropdown with all materials
 	valueMaterial := widget.NewEntry()
 	labelLocation := widget.NewLabel("Location:")
 	valueLocation := widget.NewEntry()
@@ -135,6 +136,7 @@ func addStockWindow(a fyne.App) {
 		addStock(&stock)
 	})
 
+	// TODO: Show output from search in this window
 	buttonSearch := widget.NewButton("Search", func() {
 		var x, y, z int
 		var err error = nil

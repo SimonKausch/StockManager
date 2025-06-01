@@ -61,11 +61,19 @@ func searchStock(stock *Stock) ([]Stock, error) {
 	var result []Stock
 
 	query := `
-		SELECT ID, xLength, yLength, zLength, material
-		FROM stock
-		WHERE xLength >= ? AND yLength >= ? AND zLength >= ?`
+        SELECT ID, xLength, yLength, zLength, material
+        FROM stock
+        WHERE xLength >= ? AND yLength >= ? AND zLength >= ?
+    `
+	args := []any{stock.XLength, stock.YLength, stock.ZLength}
 
-	rows, err := Db.Query(query, stock.XLength, stock.YLength, stock.ZLength)
+	// Check material if not empty
+	if stock.Material != "" {
+		query += " AND material = ?"
+		args = append(args, stock.Material)
+	}
+
+	rows, err := Db.Query(query, args...)
 	if err != nil {
 		log.Printf("Error querying stock by length: %v", err)
 		return nil, err
