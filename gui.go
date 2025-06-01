@@ -36,8 +36,11 @@ func gui() {
 	buttonAdd := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
 	})
+	buttonRemove := widget.NewButton("Remove Stock", func() {
+		removeStockWindow(a)
+	})
 
-	leftSide := container.NewVBox(buttonListAll, buttonAdd, Linesep, entryList)
+	leftSide := container.NewVBox(buttonListAll, buttonAdd, buttonRemove, Linesep, entryList)
 
 	mainContainer := container.NewAdaptiveGrid(2, leftSide, rightSide)
 
@@ -65,7 +68,10 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 
 		buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
 			if len(file) > 0 {
-				bbox = requestBBox(file)
+				bbox, err = requestBBox(file)
+				if err != nil {
+					dialog.ShowError(err, w)
+				}
 
 				// From float to a string with a precision of 1 decimal place
 				x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
@@ -98,6 +104,24 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 		cont = container.NewVBox(output, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
 	}
 	return cont
+}
+
+func removeStockWindow(a fyne.App) {
+	wAdd := a.NewWindow("Add stock material")
+	wAdd.Resize(fyne.NewSize(300, 200))
+
+	labelID := widget.NewLabel("ID:")
+	valueID := widget.NewEntry()
+	buttonRemove := widget.NewButton("Remove stock", func() {
+		// TODO: Code funcionality
+	})
+	output := widget.NewLabel("")
+
+	grid := container.New(layout.NewGridLayout(2), labelID, valueID)
+	content := container.NewVBox(grid, buttonRemove, output)
+
+	wAdd.SetContent(content)
+	wAdd.Show()
 }
 
 func addStockWindow(a fyne.App) {

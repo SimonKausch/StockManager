@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"math"
 	"net/http"
-	"os"
 )
 
 const (
@@ -38,37 +38,36 @@ func bboxLengths(n []float64) BoundingBox {
 
 // Requests the bounding box in x, y and z axis
 // Returns BoundingBox type
-func requestBBox(filename string) BoundingBox {
+func requestBBox(filename string) (BoundingBox, error) {
 	endpoint := "/box/" + filename
+
+	var bBox BoundingBox
 
 	res, err := http.Get(serverAdress + ":" + serverPort + endpoint)
 	if err != nil {
-		log.Println(err)
-		// TODO: Error message instead of os.Exit
-		os.Exit(0)
+		return bBox, err
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		log.Println(err)
-		os.Exit(0)
+		return bBox, err
 	}
 	if string(body) == "null" {
-		log.Println("File not found")
-		os.Exit(0)
+		err = errors.New("file not found")
+		return bBox, err
 	}
 
 	var numbers []float64
 	err = json.Unmarshal(body, &numbers)
 	if err != nil {
-		log.Println(err)
+		return bBox, err
 	}
 
 	res.Body.Close()
 
 	log.Println(numbers)
 
-	bBox := bboxLengths(numbers)
+	bBox = bboxLengths(numbers)
 
-	return bBox
+	return bBox, nil
 }
