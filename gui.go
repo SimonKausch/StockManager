@@ -27,9 +27,6 @@ func gui() {
 
 	entryList := widget.NewLabel("")
 
-	// temporaryStock, _ := ListStock()
-	// entryTable := widget.NewLabel(createTable(temporaryStock))
-
 	rightSide := analyzeStep(w)
 
 	buttonListAll := widget.NewButton("List all stock", func() {
@@ -91,13 +88,8 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 					log.Println(err)
 				}
 				fittingStock := findFittingStock(bbox, allStock)
-				// log.Println(fittingStock)
-				//
-				// var output string
-				// // TODO: Insert header as first line in ouput
-				// for _, s := range fittingStock {
-				// 	output += PrintStock(s)
-				// }
+				log.Println(fittingStock)
+
 				// TODO: Instead of dialog, create new window
 				dialog.ShowInformation("Fitting stock", createTable(fittingStock), w)
 			}
@@ -144,7 +136,6 @@ func addStockWindow(a fyne.App) {
 	})
 
 	buttonSearch := widget.NewButton("Search", func() {
-		// TODO: Check if x,y,z is an int
 		var x, y, z int
 		var err error = nil
 

@@ -9,12 +9,13 @@ import (
 	"text/tabwriter"
 )
 
+// createTable creates an output in table form from
+// a slice of Stock
 func createTable(stock []Stock) string {
 	var buf bytes.Buffer
 
 	w := tabwriter.NewWriter(&buf, 10, 0, 2, ' ', 0)
 	fmt.Fprintln(w, "ID\tX\tY\tZ\tMaterial")
-	// TODO: for loop over slice of Stock
 	for _, s := range stock {
 		out := strconv.Itoa(int(s.ID)) + "\t"
 		out += strconv.Itoa(int(s.XLength)) + "\t"
@@ -23,7 +24,6 @@ func createTable(stock []Stock) string {
 		out += s.Material
 		fmt.Fprintln(w, out)
 	}
-	// fmt.Fprintln(w, "10\t100\t50\t30\tStahl")
 	w.Flush()
 
 	return buf.String()
