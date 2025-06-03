@@ -45,6 +45,14 @@ func initDB() (*sql.DB, error) {
 	return db, nil
 }
 
+func removeStock(i int) error {
+	query := `
+	DELETE FROM stock WHERE id = ?
+	`
+	_, err := Db.Exec(query, i)
+	return err
+}
+
 func addStock(stock *Stock) error {
 	query := `
 		INSERT INTO stock (xLength, yLength, zLength, material, certificate_path, invoice_path)

@@ -107,13 +107,17 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 }
 
 func removeStockWindow(a fyne.App) {
-	wAdd := a.NewWindow("Add stock material")
+	wAdd := a.NewWindow("Remove stock")
 	wAdd.Resize(fyne.NewSize(300, 200))
 
 	labelID := widget.NewLabel("ID:")
 	valueID := widget.NewEntry()
 	buttonRemove := widget.NewButton("Remove stock", func() {
-		// TODO: Code funcionality
+		id, err := parseIntInput(valueID.Text)
+		if err != nil {
+			log.Println(err)
+		}
+		removeStock(id)
 	})
 	output := widget.NewLabel("")
 
