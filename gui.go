@@ -73,7 +73,8 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 				}
 				// Get the full file path
 				filePath := reader.URI().Path()
-				selectedFilePathLabel.SetText(fmt.Sprintf("Selected file: %s", filePath))
+				// selectedFilePathLabel.SetText(fmt.Sprintf("Selected file: %s", filePath))
+				selectedFilePathLabel.SetText(filePath)
 
 				defer reader.Close()
 			}, w).Show()
@@ -88,7 +89,9 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 
 		buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
 			if len(file) > 0 {
-				bbox, err = requestBBox(file)
+				// bbox, err = requestBBox(file)
+				// FIX: Test with upload
+				bbox, err = uploadFile(selectedFilePathLabel.Text)
 				if err != nil {
 					dialog.ShowError(err, w)
 				}
