@@ -59,6 +59,26 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 		dialog.ShowError(err, w)
 	} else {
 		var file string
+
+		// Create a label to display the selected file path
+		selectedFilePathLabel := widget.NewLabel("No file selected")
+
+		buttonFile := widget.NewButton("Choose file", func() {
+			dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+				if err != nil {
+					dialog.ShowError(err, w)
+				}
+				if reader == nil {
+					selectedFilePathLabel.SetText("File selection cancelled")
+				}
+				// Get the full file path
+				filePath := reader.URI().Path()
+				selectedFilePathLabel.SetText(fmt.Sprintf("Selected file: %s", filePath))
+
+				defer reader.Close()
+			}, w).Show()
+		})
+
 		entryResult := widget.NewLabel("")
 
 		output := widget.NewSelect(listFiles, func(r string) {
@@ -101,7 +121,7 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 			}
 		})
 
-		cont = container.NewVBox(output, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
+		cont = container.NewVBox(output, selectedFilePathLabel, buttonFile, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
 	}
 	return cont
 }
