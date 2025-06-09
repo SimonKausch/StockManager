@@ -19,7 +19,7 @@ import (
 const stepDir = "../stepReader/files/"
 
 func gui() {
-	a := app.New()
+	a := app.NewWithID("stepReader")
 	w := a.NewWindow("StockManger")
 	w.Resize(fyne.Size{Width: 750, Height: 750})
 
@@ -53,79 +53,67 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 	var cont *fyne.Container
 	var bbox BoundingBox
 
-	listFiles, err := getFilesinDir()
+	// Create a label to display the selected file path
+	selectedFilePathLabel := widget.NewLabel("No file selected")
 
-	if err != nil {
-		dialog.ShowError(err, w)
-	} else {
-		var file string
-
-		// Create a label to display the selected file path
-		selectedFilePathLabel := widget.NewLabel("No file selected")
-
-		buttonFile := widget.NewButton("Choose file", func() {
-			dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
-				if err != nil {
-					dialog.ShowError(err, w)
-				}
-				if reader == nil {
-					selectedFilePathLabel.SetText("File selection cancelled")
-				}
-				// Get the full file path
-				filePath := reader.URI().Path()
-				// selectedFilePathLabel.SetText(fmt.Sprintf("Selected file: %s", filePath))
-				selectedFilePathLabel.SetText(filePath)
-
-				defer reader.Close()
-			}, w).Show()
-		})
-
-		entryResult := widget.NewLabel("")
-
-		output := widget.NewSelect(listFiles, func(r string) {
-			file = r
-		})
-		output.PlaceHolder = "Select step file"
-
-		buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
-			if len(file) > 0 {
-				// bbox, err = requestBBox(file)
-				// FIX: Test with upload
-				bbox, err = uploadFile(selectedFilePathLabel.Text)
-				if err != nil {
-					dialog.ShowError(err, w)
-				}
-
-				// From float to a string with a precision of 1 decimal place
-				x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
-				y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
-				z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
-
-				result := x + y + z
-				entryResult.SetText(result)
-			} else {
-				dialog.ShowInformation("Info", "Filename empty", w)
+	// Open file dialog
+	buttonFile := widget.NewButton("Choose file", func() {
+		dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+			if err != nil {
+				dialog.ShowError(err, w)
 			}
-		})
-
-		buttonFindStock := widget.NewButton("Find fitting stock", func() {
-			if entryResult.Text == "" {
-				dialog.ShowInformation("Error", "No step file analyzed", w)
-			} else {
-				allStock, err := ListStock()
-				if err != nil {
-					log.Println(err)
-				}
-				fittingStock := findFittingStock(bbox, allStock)
-				log.Println(fittingStock)
-
-				// TODO: Instead of dialog, create new window
-				dialog.ShowInformation("Fitting stock", createTable(fittingStock), w)
+			if reader == nil {
+				selectedFilePathLabel.SetText("File selection cancelled")
 			}
-		})
+			// Get the full file path
+			filePath := reader.URI().Path()
+			selectedFilePathLabel.SetText(filePath)
 
-		cont = container.NewVBox(output, selectedFilePathLabel, buttonFile, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
-	}
+			defer reader.Close()
+		}, w).Show()
+	})
+
+	// Label to display results
+	entryResult := widget.NewLabel("")
+
+	// Analyze step file selected with file dialog
+	buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
+		if len(selectedFilePathLabel.Text) > 0 {
+			bbox, err := uploadFile(selectedFilePathLabel.Text)
+			if err != nil {
+				dialog.ShowError(err, w)
+			}
+
+			// From float to a string with a precision of 1 decimal place
+			x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
+			y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
+			z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
+
+			result := x + y + z
+			entryResult.SetText(result)
+		} else {
+			dialog.ShowInformation("Info", "Choose file first", w)
+		}
+	})
+
+	buttonFindStock := widget.NewButton("Find fitting stock", func() {
+		if entryResult.Text == "" {
+			dialog.ShowInformation("Error", "No step file analyzed", w)
+		} else {
+			allStock, err := ListStock()
+			if err != nil {
+				log.Println(err)
+			}
+			fittingStock := findFittingStock(bbox, allStock)
+			log.Println(fittingStock)
+
+			// TODO: Instead of dialog, create new window
+			dialog.ShowInformation("Fitting stock", createTable(fittingStock), w)
+		}
+	})
+
+	cont = container.NewVBox(selectedFilePathLabel, buttonFile, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
+
 	return cont
 }
 
