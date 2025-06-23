@@ -49,7 +49,7 @@ func removeStock(i int) error {
 	query := `
 	DELETE FROM stock WHERE id = ?
 	`
-	_, err := Db.Exec(query, i)
+	_, err := DB.Exec(query, i)
 	return err
 }
 
@@ -58,7 +58,7 @@ func addStock(stock *Stock) error {
 		INSERT INTO stock (xLength, yLength, zLength, material, certificate_path, invoice_path)
 		VALUES (?, ?, ?, ?, ?, ?)
 	`
-	_, err := Db.Exec(query, stock.XLength, stock.YLength, stock.ZLength, stock.Material, stock.CertificatePath, stock.InvoicePath)
+	_, err := DB.Exec(query, stock.XLength, stock.YLength, stock.ZLength, stock.Material, stock.CertificatePath, stock.InvoicePath)
 	return err
 }
 
@@ -80,7 +80,7 @@ func searchStock(stock *Stock) ([]Stock, error) {
 		args = append(args, stock.Material)
 	}
 
-	rows, err := Db.Query(query, args...)
+	rows, err := DB.Query(query, args...)
 	if err != nil {
 		log.Printf("Error querying stock by length: %v", err)
 		return nil, err
@@ -109,7 +109,7 @@ func searchStock(stock *Stock) ([]Stock, error) {
 }
 
 func ListStock() ([]Stock, error) {
-	row, err := Db.Query("SELECT * FROM stock ORDER BY id")
+	row, err := DB.Query("SELECT * FROM stock ORDER BY id")
 	if err != nil {
 		return nil, err
 	}

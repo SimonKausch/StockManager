@@ -8,6 +8,7 @@ import (
 
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/storage"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -52,13 +53,15 @@ func gui() {
 func analyzeStep(w fyne.Window) *fyne.Container {
 	var cont *fyne.Container
 	var bbox BoundingBox
+	var err error
 
 	// Create a label to display the selected file path
 	selectedFilePathLabel := widget.NewLabel("No file selected")
 
 	// Open file dialog
-	buttonFile := widget.NewButton("Choose file", func() {
-		dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
+	buttonFile := widget.NewButton("Choose .stp file", func() {
+		// TODO: Move function to gui_helpers
+		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 			if err != nil {
 				dialog.ShowError(err, w)
 			}
@@ -70,7 +73,12 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 			selectedFilePathLabel.SetText(filePath)
 
 			defer reader.Close()
-		}, w).Show()
+		}, w)
+
+		// Filte for stp files
+		fd.SetFilter(storage.NewExtensionFileFilter([]string{".stp"}))
+
+		fd.Show()
 	})
 
 	// Label to display results
@@ -79,7 +87,7 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 	// Analyze step file selected with file dialog
 	buttonAnalyze := widget.NewButton("Get bounding box of step file", func() {
 		if len(selectedFilePathLabel.Text) > 0 {
-			bbox, err := uploadFile(selectedFilePathLabel.Text)
+			bbox, err = uploadFile(selectedFilePathLabel.Text)
 			if err != nil {
 				dialog.ShowError(err, w)
 			}

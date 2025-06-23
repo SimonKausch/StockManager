@@ -108,7 +108,7 @@ func uploadFile(filepath string) (BoundingBox, error) {
 	}
 
 	// Create the HTTP request
-	req, err := http.NewRequest("POST", "http://localhost:8000/upload/", body)
+	req, err := http.NewRequest("POST", serverAdress+":"+serverPort+"/upload/", body)
 	if err != nil {
 		return bBox, err
 	}

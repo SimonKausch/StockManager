@@ -2,16 +2,16 @@ package main
 
 import "database/sql"
 
-var Db *sql.DB
+var DB *sql.DB
 
 func main() {
 	var err error
 
-	Db, err = initDB()
+	DB, err = initDB()
 	if err != nil {
 		panic(err)
 	}
-	defer Db.Close()
+	defer DB.Close()
 
 	for {
 		gui()
