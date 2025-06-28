@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"log"
-	"os"
 	"strconv"
 	"text/tabwriter"
 )
+
+// TODO: Import materials from file
+var listMaterials []string = []string{"1.2313", "1.4305", "1.4404", "Aluminium", "Cu"}
 
 // createTable creates an output in table form from
 // a slice of Stock
@@ -40,20 +41,6 @@ func parseIntInput(text string) (int, error) {
 	return val, nil
 }
 
-func getFilesinDir() ([]string, error) {
-	entries, err := os.ReadDir(stepDir)
-	if err != nil {
-		return nil, err
-	}
-
-	var files []string
-
-	for _, entry := range entries {
-		files = append(files, entry.Name())
-	}
-	return files, nil
-}
-
 func PrintStock(s Stock) string {
 	var t string
 
@@ -71,18 +58,4 @@ func PrintStock(s Stock) string {
 	t += "\n"
 
 	return t
-}
-
-// Return stock as one string
-func listStockString() *string {
-	var out string
-
-	slice, err := ListStock()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, s := range slice {
-		out += PrintStock(s)
-	}
-	return &out
 }

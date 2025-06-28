@@ -60,7 +60,6 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 
 	// Open file dialog
 	buttonFile := widget.NewButton("Choose .stp file", func() {
-		// TODO: Move function to gui_helpers
 		fd := dialog.NewFileOpen(func(reader fyne.URIReadCloser, err error) {
 			if err != nil {
 				dialog.ShowError(err, w)
@@ -69,8 +68,7 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 				selectedFilePathLabel.SetText("File selection cancelled")
 			}
 			// Get the full file path
-			filePath := reader.URI().Path()
-			selectedFilePathLabel.SetText(filePath)
+			selectedFilePathLabel.SetText(reader.URI().Path())
 
 			defer reader.Close()
 		}, w)
@@ -148,7 +146,6 @@ func removeStockWindow(a fyne.App) {
 }
 
 func addStockWindow(a fyne.App) {
-	// TODO: Show list of materials from json file
 	wAdd := a.NewWindow("Add stock material")
 	wAdd.Resize(fyne.NewSize(400, 400))
 
@@ -160,14 +157,15 @@ func addStockWindow(a fyne.App) {
 	labelZ := widget.NewLabel("Z:")
 	valueZ := widget.NewEntry()
 	labelMaterial := widget.NewLabel("Material:")
-	// TODO: Dropdown with all materials
+	selectMaterial := widget.NewSelect(listMaterials, func(selectedMat string) {
+	})
 	valueMaterial := widget.NewEntry()
 	labelLocation := widget.NewLabel("Location:")
 	valueLocation := widget.NewEntry()
 
 	// Create a grid
 	grid := container.New(layout.NewGridLayout(2), labelX, valueX, labelY, valueY, labelZ, valueZ,
-		labelMaterial, valueMaterial, labelLocation, valueLocation)
+		labelMaterial, selectMaterial, labelLocation, valueLocation)
 
 	buttonAdd := widget.NewButton("Add Stock", func() {
 		x, _ := strconv.Atoi(valueX.Text)
@@ -177,7 +175,7 @@ func addStockWindow(a fyne.App) {
 			XLength:  x,
 			YLength:  y,
 			ZLength:  z,
-			Material: valueMaterial.Text,
+			Material: selectMaterial.Selected,
 			Location: valueLocation.Text,
 		}
 		addStock(&stock)
