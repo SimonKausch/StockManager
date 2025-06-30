@@ -33,7 +33,16 @@ func gui() {
 	buttonListAll := widget.NewButton("List all stock", func() {
 		temporaryStock, _ := ListStock()
 		entryList.SetText(createTable(temporaryStock))
+
+		// FIX: Delete later, used for debugging
+		l, _ := ListByMaterial("Aluminium")
+		log.Println(l)
 	})
+
+	buttonListByMaterial := widget.NewButton("List stock by material", func() {
+		listByMaterialWindow(a)
+	})
+
 	buttonAdd := widget.NewButton("Add or search Stock", func() {
 		addStockWindow(a)
 	})
@@ -41,7 +50,7 @@ func gui() {
 		removeStockWindow(a)
 	})
 
-	leftSide := container.NewVBox(buttonListAll, buttonAdd, buttonRemove, Linesep, entryList)
+	leftSide := container.NewVBox(buttonListAll, buttonListByMaterial, buttonAdd, buttonRemove, Linesep, entryList)
 
 	mainContainer := container.NewAdaptiveGrid(2, leftSide, rightSide)
 
@@ -223,6 +232,35 @@ func addStockWindow(a fyne.App) {
 	// Create a vertical box layout to stack the grid and the button
 	content := container.NewVBox(
 		grid, buttonSearch, buttonAdd, resultsList)
+
+	wAdd.SetContent(content)
+	wAdd.Show()
+}
+
+func listByMaterialWindow(a fyne.App) {
+	wAdd := a.NewWindow("Filter by material")
+	wAdd.Resize(fyne.NewSize(400, 400))
+
+	// All the labels and values for input
+	allMaterials, err := ListMaterials()
+	if err != nil {
+		log.Println(err)
+	}
+	labelMaterial := widget.NewLabel("Material:")
+	selectMaterial := widget.NewSelect(allMaterials, func(selectedMat string) {
+	})
+
+	// Create a grid
+	grid := container.New(layout.NewGridLayout(2), labelMaterial, selectMaterial)
+
+	// TODO: Search by chosen material
+
+	// Show output from search
+	resultsList := widget.NewLabel("")
+
+	// Create a vertical box layout to stack the grid and the button
+	content := container.NewVBox(
+		grid, resultsList)
 
 	wAdd.SetContent(content)
 	wAdd.Show()

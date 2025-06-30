@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"slices"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -110,6 +111,48 @@ func searchStock(stock *Stock) ([]Stock, error) {
 
 func ListStock() ([]Stock, error) {
 	row, err := DB.Query("SELECT * FROM stock ORDER BY id")
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	stockMaterials := []Stock{}
+	for row.Next() {
+		var stock Stock
+		err := row.Scan(&stock.ID, &stock.XLength, &stock.YLength, &stock.ZLength, &stock.Material, &stock.CertificatePath, &stock.InvoicePath)
+		if err != nil {
+			return nil, err
+		}
+		stockMaterials = append(stockMaterials, stock)
+	}
+	return stockMaterials, nil
+}
+
+func ListMaterials() ([]string, error) {
+	row, err := DB.Query("SELECT Material FROM stock ORDER BY id")
+	if err != nil {
+		return nil, err
+	}
+	defer row.Close()
+
+	allMaterials := []string{}
+
+	for row.Next() {
+		var Material string
+		err := row.Scan(&Material)
+		if err != nil {
+			return nil, err
+		}
+		if slices.Contains(allMaterials, Material) {
+			continue // Skip duplicates
+		}
+		allMaterials = append(allMaterials, Material)
+	}
+	return allMaterials, nil
+}
+
+func ListByMaterial(m string) ([]Stock, error) {
+	row, err := DB.Query("SELECT * FROM stock WHERE Material = ? ORDER BY id", m)
 	if err != nil {
 		return nil, err
 	}
