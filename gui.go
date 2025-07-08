@@ -253,14 +253,21 @@ func listByMaterialWindow(a fyne.App) {
 	// Create a grid
 	grid := container.New(layout.NewGridLayout(2), labelMaterial, selectMaterial)
 
-	// TODO: Search by chosen material
-
 	// Show output from search
 	resultsList := widget.NewLabel("")
 
+	// TODO: Search by chosen material
+	buttonByMaterial := widget.NewButton("Search by material", func() {
+		res, err := ListByMaterial(selectMaterial.Selected)
+		if err != nil {
+			log.Println(err)
+		}
+		resultsList.SetText(createTable(res))
+	})
+
 	// Create a vertical box layout to stack the grid and the button
 	content := container.NewVBox(
-		grid, resultsList)
+		grid, buttonByMaterial, resultsList)
 
 	wAdd.SetContent(content)
 	wAdd.Show()
