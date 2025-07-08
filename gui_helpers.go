@@ -3,8 +3,12 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"image/color"
 	"strconv"
 	"text/tabwriter"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 )
 
 // TODO: Import materials from file
@@ -56,6 +60,15 @@ func PrintStock(s Stock) string {
 	t += "    Location: "
 	t += s.Location
 	t += "\n"
+
+	return t
+}
+
+func CreateTitleText(s string) *canvas.Text {
+	t := canvas.NewText(s, color.Black)
+	t.TextStyle = fyne.TextStyle{Bold: true}
+	t.Alignment = fyne.TextAlignCenter
+	t.TextSize = 20
 
 	return t
 }

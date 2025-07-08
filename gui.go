@@ -50,7 +50,9 @@ func gui() {
 		removeStockWindow(a)
 	})
 
-	leftSide := container.NewVBox(buttonListAll, buttonListByMaterial, buttonAdd, buttonRemove, Linesep, entryList)
+	textTitleLeft := CreateTitleText("Manage stock material")
+
+	leftSide := container.NewVBox(textTitleLeft, buttonListAll, buttonListByMaterial, buttonAdd, buttonRemove, Linesep, entryList)
 
 	mainContainer := container.NewAdaptiveGrid(2, leftSide, rightSide)
 
@@ -66,6 +68,7 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 
 	// Create a label to display the selected file path
 	selectedFilePathLabel := widget.NewLabel("No file selected")
+	selectedFilePathLabel.Alignment = fyne.TextAlignCenter
 
 	// Open file dialog
 	buttonFile := widget.NewButton("Choose .stp file", func() {
@@ -75,6 +78,7 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 			}
 			if reader == nil {
 				selectedFilePathLabel.SetText("File selection cancelled")
+				return
 			}
 			// Get the full file path
 			selectedFilePathLabel.SetText(reader.URI().Path())
@@ -84,6 +88,8 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 
 		// Filte for stp files
 		fd.SetFilter(storage.NewExtensionFileFilter([]string{".stp"}))
+
+		fd.Resize(fyne.NewSize(700, 400))
 
 		fd.Show()
 	})
@@ -127,7 +133,9 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 		}
 	})
 
-	cont = container.NewVBox(selectedFilePathLabel, buttonFile, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
+	textTitleRight := CreateTitleText("Analyze step file")
+
+	cont = container.NewVBox(textTitleRight, selectedFilePathLabel, buttonFile, buttonAnalyze, buttonFindStock, canvas.NewLine(color.Black), entryResult)
 
 	return cont
 }
@@ -256,7 +264,6 @@ func listByMaterialWindow(a fyne.App) {
 	// Show output from search
 	resultsList := widget.NewLabel("")
 
-	// TODO: Search by chosen material
 	buttonByMaterial := widget.NewButton("Search by material", func() {
 		res, err := ListByMaterial(selectMaterial.Selected)
 		if err != nil {
