@@ -1,0 +1,11 @@
+name: pyoccenv
+channels:
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+dependencies:
+  - python=3.12
+  - pythonocc-core=7.9.0
+  - fastapi
+  - uvicorn
+  - python-multipart
+prefix: /Users/simon.kausch/miniconda3/envs/pyoccenv
