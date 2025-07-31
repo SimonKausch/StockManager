@@ -268,20 +268,7 @@ func listByMaterialWindow(a fyne.App) {
 			return
 		}
 
-		// Build the table data
-		header := []string{"ID", "X", "Y", "Z", "Material", "Location"}
-		data = [][]string{header}
-		for _, stock := range res {
-			row := []string{
-				strconv.FormatInt(stock.ID, 10),
-				strconv.Itoa(stock.XLength) + " mm",
-				strconv.Itoa(stock.YLength) + " mm",
-				strconv.Itoa(stock.ZLength) + " mm",
-				stock.Material,
-				stock.Location,
-			}
-			data = append(data, row)
-		}
+		tableData(res, &data)
 		table.Refresh()
 	})
 

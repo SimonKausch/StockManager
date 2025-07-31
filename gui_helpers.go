@@ -97,3 +97,19 @@ func createStockTable(data *[][]string) *widget.Table {
 			}
 		})
 }
+
+func tableData(s []Stock, d *[][]string) {
+	header := []string{"ID", "X", "Y", "Z", "Material", "Location"}
+	*d = [][]string{header}
+	for _, stock := range s {
+		row := []string{
+			strconv.FormatInt(stock.ID, 10),
+			strconv.Itoa(stock.XLength) + " mm",
+			strconv.Itoa(stock.YLength) + " mm",
+			strconv.Itoa(stock.ZLength) + " mm",
+			stock.Material,
+			stock.Location,
+		}
+		*d = append(*d, row)
+	}
+}
