@@ -21,7 +21,7 @@ const stepDir = "../stepReader/files/"
 
 func gui() {
 	a := app.NewWithID("stepReader")
-	w := a.NewWindow("StockManger")
+	w := a.NewWindow("StockManager")
 	w.Resize(fyne.Size{Width: 750, Height: 750})
 
 	Linesep := canvas.NewLine(color.Black)
@@ -82,7 +82,7 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 			defer reader.Close()
 		}, w)
 
-		// Filte for stp files
+		// Filter for stp files
 		fd.SetFilter(storage.NewExtensionFileFilter([]string{".stp"}))
 
 		fd.Resize(fyne.NewSize(700, 400))
@@ -103,8 +103,8 @@ func analyzeStep(w fyne.Window) *fyne.Container {
 
 			// From float to a string with a precision of 1 decimal place
 			x := fmt.Sprintf("X: %.1f\n", bbox.BoxX)
-			y := fmt.Sprintf("X: %.1f\n", bbox.BoxY)
-			z := fmt.Sprintf("X: %.1f\n", bbox.BoxZ)
+			y := fmt.Sprintf("Y: %.1f\n", bbox.BoxY)
+			z := fmt.Sprintf("Z: %.1f\n", bbox.BoxZ)
 
 			result := x + y + z
 			entryResult.SetText(result)
@@ -250,12 +250,12 @@ func listByMaterialWindow(a fyne.App) {
 	if err != nil {
 		log.Println(err)
 	}
-	lableMaterial := widget.NewLabel("Material:")
+	labelMaterial := widget.NewLabel("Material:")
 	selectMaterial := widget.NewSelect(allMaterials, func(selectedMat string) {
 	})
 
 	// Create a grid
-	grid := container.New(layout.NewGridLayout(2), lableMaterial, selectMaterial)
+	grid := container.New(layout.NewGridLayout(2), labelMaterial, selectMaterial)
 
 	// Show output from search
 	var data [][]string
@@ -268,7 +268,7 @@ func listByMaterialWindow(a fyne.App) {
 			return
 		}
 
-		tableData(res, &data)
+		tableData(&res, &data)
 		table.Refresh()
 	})
 
