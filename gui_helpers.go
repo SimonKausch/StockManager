@@ -9,6 +9,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/widget"
 )
 
 // TODO: Import materials from file
@@ -71,4 +72,28 @@ func CreateTitleText(s string) *canvas.Text {
 	t.TextSize = 20
 
 	return t
+}
+
+func createStockTable(data *[][]string) *widget.Table {
+	return widget.NewTable(
+		func() (int, int) {
+			if len(*data) == 0 {
+				return 0, 0
+			}
+			return len(*data), 6
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("wide content")
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			if i.Row < len(*data) && i.Col < len((*data)[i.Row]) {
+				label := o.(*widget.Label)
+				label.SetText((*data)[i.Row][i.Col])
+				if i.Row == 0 {
+					label.TextStyle = fyne.TextStyle{Bold: true}
+				} else {
+					label.TextStyle = fyne.TextStyle{}
+				}
+			}
+		})
 }

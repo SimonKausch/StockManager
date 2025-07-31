@@ -250,36 +250,16 @@ func listByMaterialWindow(a fyne.App) {
 	if err != nil {
 		log.Println(err)
 	}
-	labelMaterial := widget.NewLabel("Material:")
+	lableMaterial := widget.NewLabel("Material:")
 	selectMaterial := widget.NewSelect(allMaterials, func(selectedMat string) {
 	})
 
 	// Create a grid
-	grid := container.New(layout.NewGridLayout(2), labelMaterial, selectMaterial)
+	grid := container.New(layout.NewGridLayout(2), lableMaterial, selectMaterial)
 
 	// Show output from search
 	var data [][]string
-	table := widget.NewTable(
-		func() (int, int) {
-			if len(data) == 0 {
-				return 0, 0
-			}
-			return len(data), 6
-		},
-		func() fyne.CanvasObject {
-			return widget.NewLabel("wide content")
-		},
-		func(i widget.TableCellID, o fyne.CanvasObject) {
-			if i.Row < len(data) && i.Col < len(data[i.Row]) {
-				label := o.(*widget.Label)
-				label.SetText(data[i.Row][i.Col])
-				if i.Row == 0 {
-					label.TextStyle = fyne.TextStyle{Bold: true}
-				} else {
-					label.TextStyle = fyne.TextStyle{}
-				}
-			}
-		})
+	table := createStockTable(&data)
 
 	buttonByMaterial := widget.NewButton("Search by material", func() {
 		res, err := ListByMaterial(selectMaterial.Selected)
@@ -287,6 +267,8 @@ func listByMaterialWindow(a fyne.App) {
 			log.Println(err)
 			return
 		}
+
+		// Build the table data
 		header := []string{"ID", "X", "Y", "Z", "Material", "Location"}
 		data = [][]string{header}
 		for _, stock := range res {
@@ -303,7 +285,6 @@ func listByMaterialWindow(a fyne.App) {
 		table.Refresh()
 	})
 
-	// Create a vertical box layout to stack the grid and the button
 	top := container.NewVBox(grid, buttonByMaterial)
 	content := container.NewBorder(top, nil, nil, nil, table)
 
