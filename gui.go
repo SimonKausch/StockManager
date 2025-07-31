@@ -33,10 +33,6 @@ func gui() {
 	buttonListAll := widget.NewButton("List all stock", func() {
 		temporaryStock, _ := ListStock()
 		entryList.SetText(createTable(temporaryStock))
-
-		// FIX: Delete later, used for debugging
-		l, _ := ListByMaterial("Aluminium")
-		log.Println(l)
 	})
 
 	buttonListByMaterial := widget.NewButton("List stock by material", func() {
@@ -247,7 +243,7 @@ func addStockWindow(a fyne.App) {
 
 func listByMaterialWindow(a fyne.App) {
 	wAdd := a.NewWindow("Filter by material")
-	wAdd.Resize(fyne.NewSize(400, 400))
+	wAdd.Resize(fyne.NewSize(750, 400))
 
 	// All the labels and values for input
 	allMaterials, err := ListMaterials()
@@ -262,19 +258,54 @@ func listByMaterialWindow(a fyne.App) {
 	grid := container.New(layout.NewGridLayout(2), labelMaterial, selectMaterial)
 
 	// Show output from search
-	resultsList := widget.NewLabel("")
+	var data [][]string
+	table := widget.NewTable(
+		func() (int, int) {
+			if len(data) == 0 {
+				return 0, 0
+			}
+			return len(data), 6
+		},
+		func() fyne.CanvasObject {
+			return widget.NewLabel("wide content")
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			if i.Row < len(data) && i.Col < len(data[i.Row]) {
+				label := o.(*widget.Label)
+				label.SetText(data[i.Row][i.Col])
+				if i.Row == 0 {
+					label.TextStyle = fyne.TextStyle{Bold: true}
+				} else {
+					label.TextStyle = fyne.TextStyle{}
+				}
+			}
+		})
 
 	buttonByMaterial := widget.NewButton("Search by material", func() {
 		res, err := ListByMaterial(selectMaterial.Selected)
 		if err != nil {
 			log.Println(err)
+			return
 		}
-		resultsList.SetText(createTable(res))
+		header := []string{"ID", "X", "Y", "Z", "Material", "Location"}
+		data = [][]string{header}
+		for _, stock := range res {
+			row := []string{
+				strconv.FormatInt(stock.ID, 10),
+				strconv.Itoa(stock.XLength) + " mm",
+				strconv.Itoa(stock.YLength) + " mm",
+				strconv.Itoa(stock.ZLength) + " mm",
+				stock.Material,
+				stock.Location,
+			}
+			data = append(data, row)
+		}
+		table.Refresh()
 	})
 
 	// Create a vertical box layout to stack the grid and the button
-	content := container.NewVBox(
-		grid, buttonByMaterial, resultsList)
+	top := container.NewVBox(grid, buttonByMaterial)
+	content := container.NewBorder(top, nil, nil, nil, table)
 
 	wAdd.SetContent(content)
 	wAdd.Show()
