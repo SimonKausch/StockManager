@@ -17,12 +17,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-const stepDir = "../stepReader/files/"
-
 func gui() {
 	a := app.NewWithID("stepReader")
 	w := a.NewWindow("StockManager")
-	w.Resize(fyne.Size{Width: 750, Height: 750})
+	w.Resize(fyne.Size{Width: 500, Height: 400})
 
 	Linesep := canvas.NewLine(color.Black)
 
@@ -31,6 +29,7 @@ func gui() {
 	rightSide := analyzeStep(w)
 
 	buttonListAll := widget.NewButton("List all stock", func() {
+		// TODO: Show stock in a new window and as a table
 		temporaryStock, _ := ListStock()
 		entryList.SetText(createTable(temporaryStock))
 	})
@@ -50,7 +49,9 @@ func gui() {
 
 	leftSide := container.NewVBox(textTitleLeft, buttonListAll, buttonListByMaterial, buttonAdd, buttonRemove, Linesep, entryList)
 
-	mainContainer := container.NewAdaptiveGrid(2, leftSide, rightSide)
+	stockTab := container.NewTabItem("Stock Management", leftSide)
+	analysisTab := container.NewTabItem("Import Step File", rightSide)
+	mainContainer := container.NewAppTabs(stockTab, analysisTab)
 
 	w.SetContent(mainContainer)
 	w.CenterOnScreen()
