@@ -24,14 +24,10 @@ func gui() {
 
 	Linesep := canvas.NewLine(color.Black)
 
-	entryList := widget.NewLabel("")
-
-	rightSide := analyzeStep(w)
+	tabStepFile := analyzeStep(w)
 
 	buttonListAll := widget.NewButton("List all stock", func() {
-		// TODO: Show stock in a new window and as a table
-		temporaryStock, _ := ListStock()
-		entryList.SetText(createTable(temporaryStock))
+		listAllStockWindow(a)
 	})
 
 	buttonListByMaterial := widget.NewButton("List stock by material", func() {
@@ -47,10 +43,11 @@ func gui() {
 
 	textTitleLeft := CreateTitleText("Manage stock material")
 
-	leftSide := container.NewVBox(textTitleLeft, buttonListAll, buttonListByMaterial, buttonAdd, buttonRemove, Linesep, entryList)
+	tabManageStock := container.NewVBox(textTitleLeft, buttonListAll, buttonListByMaterial, buttonAdd,
+		buttonRemove, Linesep)
 
-	stockTab := container.NewTabItem("Stock Management", leftSide)
-	analysisTab := container.NewTabItem("Import Step File", rightSide)
+	stockTab := container.NewTabItem("Stock Management", tabManageStock)
+	analysisTab := container.NewTabItem("Import Step File", tabStepFile)
 	mainContainer := container.NewAppTabs(stockTab, analysisTab)
 
 	w.SetContent(mainContainer)
@@ -277,5 +274,25 @@ func listByMaterialWindow(a fyne.App) {
 	content := container.NewBorder(top, nil, nil, nil, table)
 
 	wAdd.SetContent(content)
+	wAdd.Show()
+}
+
+func listAllStockWindow(a fyne.App) {
+	wAdd := a.NewWindow("Show all stock")
+	wAdd.Resize(fyne.NewSize(750, 400))
+
+	// Initialize data for the table
+	var data [][]string
+	table := createStockTable(&data)
+
+	stock, err := ListStock()
+	if err != nil {
+		log.Println(err)
+	}
+
+	tableData(&stock, &data)
+	table.Refresh()
+
+	wAdd.SetContent(table)
 	wAdd.Show()
 }
